@@ -74,6 +74,19 @@ class IntegrationRegistryTests(unittest.TestCase):
                 self.assertIn(engine_id, listed)
                 self.assertTrue(listed[engine_id]["job_supported"])
 
+    def test_missing_sibling_source_uses_bundled_video_fallback(self) -> None:
+        """Cloud deployments must keep managed upload analysis actionable."""
+        item = next(engine for engine in integrations.INTEGRATIONS if engine.id == "sportiq")
+        with patch.object(integrations, "PORTAL_DIR", Path("/missing-portal")):
+            self.assertEqual(item.as_dict()["status"], "incomplete")
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            model_dir = Path(temp_dir) / "models"
+            model_dir.mkdir()
+            (model_dir / "pose_landmarker_lite.task").write_bytes(b"model")
+            with patch.object(integrations, "PORTAL_DIR", Path(temp_dir)):
+                self.assertEqual(item.as_dict()["status"], "available")
+
     def test_unknown_integration_is_not_resolved(self) -> None:
         self.assertIsNone(integrations.get_integration("not-a-real-engine"))
         self.assertIsNone(integrations.get_integration_definition("not-a-real-engine"))

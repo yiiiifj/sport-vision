@@ -12,7 +12,12 @@ from dataclasses import dataclass
 from pathlib import Path
 
 
-WORKSPACE_DIR = Path(__file__).resolve().parents[2]
+PORTAL_DIR = Path(__file__).resolve().parent.parent
+# In a developer checkout this is ``D:\\AIC`` and sibling specialist projects
+# can be detected.  In the Docker image it is the filesystem parent of ``/app``;
+# the portal must still be useful there even though those optional repositories
+# are intentionally not copied into the runtime image.
+WORKSPACE_DIR = PORTAL_DIR.parent
 
 
 @dataclass(frozen=True)
@@ -43,6 +48,25 @@ class Integration:
     def as_dict(self) -> dict:
         present = self.path.is_dir()
         entrypoint_present = self.entrypoint_path.exists()
+        # Managed video engines have a bundled, transparent MediaPipe-based
+        # adapter.  It is not a claim that the upstream specialist weights are
+        # present: the job preflight reports ``local_rules`` and labels every
+        # output accordingly.  Treating that adapter as unavailable in Docker
+        # made working upload-analysis buttons look broken merely because the
+        # sibling research repositories were not copied into the image.
+        fallback_available = (
+            self.id in MANAGED_VIDEO_ENGINES
+            and (PORTAL_DIR / "models" / "pose_landmarker_lite.task").is_file()
+        )
+        portal_available = self.id == "sport-vision"
+        source_available = present and entrypoint_present
+        status = "available" if (portal_available or source_available or fallback_available) else "incomplete"
+        runtime = self.runtime
+        notes = self.notes
+        if fallback_available and not source_available:
+            runtime = "Sport Vision local-rules adapter"
+            fallback_note = "Cloud-ready pose and biomechanics fallback; event labels are explainable rule candidates, not specialist-model claims."
+            notes = f"{notes} {fallback_note}".strip()
         return {
             "id": self.id,
             "name": self.name,
@@ -51,11 +75,11 @@ class Integration:
             "category": self.category,
             "summary": self.summary,
             "capabilities": list(self.capabilities),
-            "runtime": self.runtime,
-            "notes": self.notes,
+            "runtime": runtime,
+            "notes": notes,
             # Do not expose host filesystem paths to the browser.  The portal
             # only reports a usable source location and launch convention.
-            "status": "available" if present and entrypoint_present else "incomplete",
+            "status": status,
             "entrypoint": self.entrypoint,
             "job_supported": self.id in MANAGED_VIDEO_ENGINES,
             "requires_template": self.id in COURT_TEMPLATE_ENGINES,
