@@ -58,26 +58,26 @@ class Dashboard {
 
     /**
      * Update biomechanics bars
-     * @param {Object} bio - {wrist_speed, body_lean, knee_bend, symmetry_score}
+     * @param {Object} bio - image-space kinematic proxies with explicit units
      */
     updateBiomechanics(bio) {
         if (!bio) return;
 
         // Wrist speed (0-50 range)
-        this._updateBar('bar-wrist-speed', bio.wrist_speed, 50);
-        this._updateValue('val-wrist-speed', `${bio.wrist_speed?.toFixed(1) || 0}`);
+        this._updateBar('bar-wrist-speed', bio.wrist_speed_px_per_frame, 50);
+        this._updateValue('val-wrist-speed', `${bio.wrist_speed_px_per_frame?.toFixed(1) || 0} px/f`);
 
         // Body lean (0-45 range)
-        this._updateBar('bar-body-lean', bio.body_lean, 45);
-        this._updateValue('val-body-lean', `${bio.body_lean?.toFixed(1) || 0}°`);
+        this._updateBar('bar-body-lean', bio.image_spine_lean_deg, 45);
+        this._updateValue('val-body-lean', `${bio.image_spine_lean_deg?.toFixed(1) || 0}°`);
 
         // Knee bend (0-90 range)
-        this._updateBar('bar-knee-bend', bio.knee_bend, 90);
-        this._updateValue('val-knee-bend', `${bio.knee_bend?.toFixed(1) || 0}°`);
+        this._updateBar('bar-knee-bend', bio.knee_flexion_proxy_deg, 90);
+        this._updateValue('val-knee-bend', `${bio.knee_flexion_proxy_deg?.toFixed(1) || 0}°`);
 
-        // Symmetry (0-100)
-        this._updateBar('bar-symmetry', bio.symmetry_score, 100);
-        this._updateValue('val-symmetry', `${bio.symmetry_score?.toFixed(0) || 0}%`);
+        // Image levelness proxy (0-100; not a symmetry measurement)
+        this._updateBar('bar-levelness', bio.image_levelness_proxy_pct, 100);
+        this._updateValue('val-levelness', `${bio.image_levelness_proxy_pct?.toFixed(0) || 0}%`);
     }
 
     /**
@@ -130,15 +130,11 @@ class Dashboard {
         ctx.fillStyle = '#0c0c24';
         ctx.fillRect(0, 0, w, h);
 
-        // Draw court outline
+        // This panel intentionally has no court markings: without a validated
+        // homography the data is an image-space trail, not a court heatmap.
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
         ctx.lineWidth = 1;
         ctx.strokeRect(10, 10, w - 20, h - 20);
-        // Center line
-        ctx.beginPath();
-        ctx.moveTo(w / 2, 10);
-        ctx.lineTo(w / 2, h - 10);
-        ctx.stroke();
 
         // Scale factors
         const sx = (w - 20) / (videoWidth || 960);

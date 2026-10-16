@@ -1,0 +1,13 @@
+# Direct dependency snapshot used by the final local validation on 2026-10-16.
+# It is a reproducible direct-dependency baseline, not a hash-locked full
+# transitive environment. Record `pip check` and run-manifest package versions
+# with every competition experiment.
+fastapi==0.143.1
+uvicorn==0.54.0
+websockets==17.2
+opencv-python-headless==5.0.0.93
+mediapipe==1.1.1
+numpy==2.5.4
+scipy==1.18.1
+python-multipart==0.0.32
+aiofiles==25.1.0

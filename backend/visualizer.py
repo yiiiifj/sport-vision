@@ -58,7 +58,7 @@ class Visualizer:
             # 绘制关键点
             self._draw_keypoints(overlay, analysis["keypoints"])
             # 绘制轨迹
-            self._draw_trajectory(overlay, analysis.get("center_of_mass"))
+            self._draw_trajectory(overlay, analysis.get("pelvis_center"))
             # 绘制关节角度
             self._draw_joint_angles(overlay, analysis)
 
@@ -102,11 +102,11 @@ class Visualizer:
                 # 白色中心
                 cv2.circle(frame, pt, 2, (255, 255, 255), -1, cv2.LINE_AA)
 
-    def _draw_trajectory(self, frame: np.ndarray, center_of_mass: Optional[dict]):
+    def _draw_trajectory(self, frame: np.ndarray, pelvis_center: Optional[dict]):
         """绘制重心运动轨迹"""
-        if center_of_mass:
+        if pelvis_center:
             self.trajectory_points.append(
-                (int(center_of_mass["x"]), int(center_of_mass["y"]))
+                (int(pelvis_center["x"]), int(pelvis_center["y"]))
             )
             if len(self.trajectory_points) > self.max_trajectory:
                 self.trajectory_points = self.trajectory_points[-self.max_trajectory:]
@@ -145,8 +145,8 @@ class Visualizer:
     def _draw_action_label(self, frame: np.ndarray, action_result: dict):
         """绘制当前识别的动作标签"""
         action_info = action_result["action_info"]
-        confidence = action_result["confidence"]
-        text = f"{action_info['name']} ({confidence:.0%})"
+        rule_match_score = action_result.get("rule_match_score", action_result["confidence"])
+        text = f"{action_info['name']} [rule {rule_match_score:.0%}]"
 
         h, w = frame.shape[:2]
         # 背景框
@@ -191,10 +191,10 @@ class Visualizer:
         if analysis:
             bio = analysis.get("biomechanics", {})
             info_lines = [
-                f"Confidence: {analysis['confidence']:.0%}",
-                f"Wrist Speed: {bio.get('wrist_speed', 0):.1f} px/f",
-                f"Body Lean: {bio.get('body_lean', 0):.1f} deg",
-                f"Symmetry: {bio.get('symmetry_score', 0):.0f}%",
+                f"Pose visibility: {analysis.get('mean_keypoint_visibility', analysis['confidence']):.0%}",
+                f"Wrist: {bio.get('wrist_speed_px_per_frame', 0):.1f} px/f",
+                f"Image lean: {bio.get('image_spine_lean_deg', 0):.1f} deg",
+                f"Image level: {bio.get('image_levelness_proxy_pct', 0):.0f}%",
             ]
             for line in info_lines:
                 cv2.putText(frame, line, (20, y_offset),

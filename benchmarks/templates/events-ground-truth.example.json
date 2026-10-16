@@ -1,0 +1,16 @@
+{
+  "events": [
+    {
+      "type": "serve",
+      "frame": 120,
+      "start_frame": 116,
+      "end_frame": 125,
+      "annotator": "annotator-a"
+    },
+    {
+      "type": "fast_swing_candidate",
+      "frame": 248,
+      "annotator": "annotator-a"
+    }
+  ]
+}

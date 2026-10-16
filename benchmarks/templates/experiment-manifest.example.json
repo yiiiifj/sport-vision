@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "experiment_id": "racket-rules-baseline-001",
+  "split_manifest": "split-manifest.json",
+  "runs": [
+    {
+      "run_id": "replace-with-32-character-job-id",
+      "output_dir": "../outputs/replace-with-32-character-job-id"
+    }
+  ],
+  "evaluations": [
+    {
+      "name": "held-out-event-f1",
+      "report": "../benchmark-results/events-test.json",
+      "expected_metric": "event_detection_frame_tolerance"
+    },
+    {
+      "name": "held-out-pose-pck",
+      "report": "../benchmark-results/pose-test.json",
+      "expected_metric": "pose_pck_2d"
+    }
+  ]
+}

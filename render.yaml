@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: sport-vision
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/health
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    maxShutdownDelaySeconds: 30

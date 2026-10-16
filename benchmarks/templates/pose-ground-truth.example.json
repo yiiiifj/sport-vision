@@ -1,0 +1,14 @@
+{
+  "frames": [
+    {
+      "frame": 120,
+      "normalization_scale_px": 384.2,
+      "joints": {
+        "left_shoulder": {"x": 421.3, "y": 207.8, "visible": true},
+        "right_shoulder": {"x": 506.1, "y": 211.4, "visible": true},
+        "left_wrist": {"x": 360.7, "y": 298.2, "visible": true},
+        "right_wrist": {"x": 580.4, "y": 310.5, "visible": false}
+      }
+    }
+  ]
+}

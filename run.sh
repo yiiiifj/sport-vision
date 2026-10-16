@@ -36,7 +36,7 @@ MODEL_PATH="models/pose_landmarker_lite.task"
 if [ ! -f "$MODEL_PATH" ]; then
     echo "🧠 Downloading MediaPipe Pose model..."
     mkdir -p models
-    curl -sL -o "$MODEL_PATH" \
+    curl --fail --location --retry 3 --retry-delay 2 --silent --show-error -o "$MODEL_PATH" \
         "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/latest/pose_landmarker_lite.task"
     echo "   ✅ Model downloaded ($(du -h "$MODEL_PATH" | cut -f1))"
 fi
@@ -52,4 +52,4 @@ echo "  💡 Put .mp4 files in ./demo_videos/ for demos"
 echo ""
 
 # Start server
-python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000
+python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000

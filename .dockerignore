@@ -1,0 +1,14 @@
+.git
+.venv
+venv
+__pycache__
+*.py[cod]
+uploads
+outputs
+state
+benchmark-results
+demo_videos
+models
+*.log
+.openai
+public-site

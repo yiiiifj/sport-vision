@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "dataset_name": "private-racket-analysis-v1",
+  "annotation_version": "YYYY-MM-DD-or-immutable-revision",
+  "splits": {
+    "train": ["clip-train-001"],
+    "validation": ["clip-validation-001"],
+    "test": ["clip-test-001"]
+  }
+}

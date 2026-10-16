@@ -23,6 +23,9 @@ Thumbs.db
 
 # Uploads (user-generated)
 uploads/
+outputs/
+state/
+benchmark-results/
 
 # Demo videos (user-provided, too large for git)
 demo_videos/*.mp4
